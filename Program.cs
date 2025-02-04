@@ -50,8 +50,8 @@ namespace TextRPG
                 Console.WriteLine("캐릭터의 정보가 표시됩니다.");
                 Console.WriteLine("LV. " + Level);
                 Console.WriteLine(Name + " " + "({0})", Job);
-                Console.WriteLine("공격력 : " + Attack);
-                Console.WriteLine("방어력 : " + Defense);
+                Console.WriteLine("공격력 : " + Attack + $"{Plus(Attack)}");
+                Console.WriteLine("방어력 : " + Defense + $"{Plus(Defense)}");
                 Console.WriteLine("체 력 : " + Health);
                 Console.WriteLine("Gold : " + Gold);
                 Console.WriteLine();
@@ -68,7 +68,10 @@ namespace TextRPG
                 }
             }
 
-            
+            private string Plus(int num)
+            {
+                return num > 10 ? $"(+{num - 10})" : "";
+            }
         }
         
         public interface IAttackItem
@@ -141,13 +144,13 @@ namespace TextRPG
 
             private ItemManager()
             {
-                attackItem.Add(new AttackItem("낡은 검", 2, "쉽게 볼 수 있는 낡은 검 입니다.", 600, false, false));
-                attackItem.Add(new AttackItem("청동 도끼", 5, "어디선가 사용됐던 거 같은 도끼입니다.", 1500, false, false));
-                attackItem.Add(new AttackItem("스파르타의 창", 7, "스파르타의 전사들이 사용했다는 전설의 창입니다.", 2500, false, false));
+                attackItem.Add(new AttackItem("1 낡은 검", 2, "쉽게 볼 수 있는 낡은 검 입니다.", 600, false, false));
+                attackItem.Add(new AttackItem("2 청동 도끼", 5, "어디선가 사용됐던 거 같은 도끼입니다.", 1500, false, false));
+                attackItem.Add(new AttackItem("3 스파르타의 창", 7, "스파르타의 전사들이 사용했다는 전설의 창입니다.", 2500, false, false));
 
-                defenseItem.Add(new DefenseItem("수련자 갑옷", 5, "수련에 도움을 주는 갑옷입니다.", 1000, false, false));
-                defenseItem.Add(new DefenseItem("무쇠 갑옷", 9, "무쇠로 만들어져 튼튼한 갑옷입니다.", 2000, false, false));
-                defenseItem.Add(new DefenseItem("스파르타의 갑옷", 15, "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500, false, false));
+                defenseItem.Add(new DefenseItem("4 수련자 갑옷", 5, "수련에 도움을 주는 갑옷입니다.", 1000, false, false));
+                defenseItem.Add(new DefenseItem("5 무쇠 갑옷", 9, "무쇠로 만들어져 튼튼한 갑옷입니다.", 2000, false, false));
+                defenseItem.Add(new DefenseItem("6 스파르타의 갑옷", 15, "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500, false, false));
             }
 
             public static ItemManager Instance
