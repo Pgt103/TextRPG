@@ -58,6 +58,7 @@
             string Name { get; set; }
             int Price { get; set; }
             int Attack { get; set; }
+            string Txt { get; set; }
         }
 
         public interface IDefenseItem
@@ -65,6 +66,7 @@
             string Name { get; set; }
             int Price { get; set; }
             int Defense { get; set; }
+            string Txt { get; set; }
         }
 
         public class AttackItem : IAttackItem
@@ -72,12 +74,14 @@
             public string Name { get; set; }
             public int Price { get; set; }
             public int Attack { get; set; }
+            public string Txt { get; set; }
 
-            public AttackItem(string name, int price, int attack)
+            public AttackItem(string name, int attack, string txt, int price )
             {
                 Name = name;
                 Price = price;
                 Attack = attack;
+                Txt = txt;
             }
         }
 
@@ -86,12 +90,36 @@
             public string Name { get; set; }
             public int Price { get; set; }
             public int Defense { get; set; }
+            public string Txt { get; set; }
 
-            public DefenseItem(string name, int price, int defense)
+            public DefenseItem(string name, int defense, string txt, int price)
             {
                 Name = name;
                 Price = price;
                 Defense = defense;
+                Txt = txt;
+            }
+        }
+
+        public class Store
+        {
+            Player player = new Player();
+            AttackItem ruinSword = new AttackItem("낡은 검", 2, " 쉽게 볼 수 있는 낡은 검 입니다.            ", 600);
+            AttackItem bronzeAxe = new AttackItem("청동 도끼", 5, "  어디선가 사용됐던거 같은 도끼입니다.        ", 1500);
+            AttackItem spartanSpear = new AttackItem("스파르타의 창", 7, " 스파르타의 전사들이 사용했다는 전설의 창입니다. ", 2500);
+            DefenseItem trainingArmor = new DefenseItem("수련자 갑옷", 5, " 수련에 도움을 주는 갑옷입니다.             ", 1000);
+            DefenseItem IronArmor = new DefenseItem("무쇠 갑옷", 9, " 무쇠로 만들어져 튼튼한 갑옷입니다.           ", 2000);
+            DefenseItem spartanArmor = new DefenseItem("스파르타의 갑옷", 15, " 스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500);
+
+            public void StoreMenu()
+            {
+                Console.WriteLine("상점");
+                Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.");
+                Console.WriteLine();
+                Console.WriteLine("[보유 골드]\n" + player.Gold);
+                Console.WriteLine();
+                Console.WriteLine("[아이템 목록]");
+
             }
         }
 
