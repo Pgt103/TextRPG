@@ -149,13 +149,13 @@ namespace TextRPG
             {
                 foreach (var item in attackItem)
                 {
-                    if (item.BuyCheck == true) 
-                        Console.WriteLine("- {0} | 공격력 +{1} | {2} | {3}", item.Name, item.Attack, item.Txt, BuyOrNot(item.Price, item.BuyCheck));
+                    if(item.BuyCheck == true)
+                        Console.WriteLine("- {0} | 공격력 +{1} | {2}", item.Name, item.Attack, item.Txt);
                 }
                 foreach (var item in defenseItem)
                 {
                     if (item.BuyCheck == true)
-                        Console.WriteLine("- {0} | 방어력 +{1} | {2} | {3}", item.Name, item.Defense, item.Txt, BuyOrNot(item.Price, item.BuyCheck));
+                        Console.WriteLine("- {0} | 방어력 +{1} | {2}", item.Name, item.Defense, item.Txt);
                 }
             }
 
@@ -211,6 +211,7 @@ namespace TextRPG
             bool caseCheck = false;
             public void StoreMenu()
             {
+                caseCheck = false;
                 Console.WriteLine();
                 Console.WriteLine("상점");
                 Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.");
@@ -220,27 +221,175 @@ namespace TextRPG
                 Console.WriteLine("[아이템 목록]");
                 itemManager.ShowItem();
                 Console.WriteLine();
-                if(caseCheck == false)
+                if (caseCheck == false)
                     Console.WriteLine("1. 아이템 구매");
+                else
+                    Console.WriteLine("구매할 아이템 번호를 눌러주세요");
                 Console.WriteLine("0. 나가기");
                 Console.WriteLine();
                 Console.WriteLine("원하시는 행동을 입력해주세요.");
                 Console.Write(">> ");
                 string input = Console.ReadLine();
-                switch (input)
+
+                if (caseCheck == false)
                 {
-                    case "1":
-                        caseCheck = true;
-                        break;
-                    case "0":
-                        caseCheck = false;
-                        Console.Clear();
-                        return;
-                    default:
-                        Console.Clear();
-                        Console.WriteLine("잘못 입력하셨습니다. 메인으로 돌아갑니다.");
-                        break;
+                    switch (input)
+                    {
+                        case "1":
+                            caseCheck = true;
+                            Console.Write("구매할 아이템의 번호를 입력하세요 >> ");
+                            input = Console.ReadLine();
+                            switch (input)
+                            {
+                                case "1":
+                                    if(itemManager.attackItem[0].BuyCheck == false && itemManager.attackItem[0].Price <= player.Gold)
+                                    {
+                                        itemManager.attackItem[0].BuyCheck = true;
+                                        player.Gold -= itemManager.attackItem[0].Price;
+                                        Console.Clear();
+                                        Console.WriteLine("구매를 완료했습니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                    else if(itemManager.attackItem[0].Price > player.Gold)
+                                    {
+                                        Console.WriteLine("Gold가 부족합니다.");
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("이미 구매한 아이템입니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                case "2":
+                                    if (itemManager.attackItem[1].BuyCheck == false && itemManager.attackItem[1].Price <= player.Gold)
+                                    {
+                                        itemManager.attackItem[1].BuyCheck = true;
+                                        player.Gold -= itemManager.attackItem[1].Price;
+                                        Console.Clear();
+                                        Console.WriteLine("구매를 완료했습니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                    else if (itemManager.attackItem[1].Price > player.Gold)
+                                    {
+                                        Console.WriteLine("Gold가 부족합니다.");
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("이미 구매한 아이템입니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                case "3":
+                                    if (itemManager.attackItem[2].BuyCheck == false && itemManager.attackItem[2].Price <= player.Gold)
+                                    {
+                                        itemManager.attackItem[2].BuyCheck = true;
+                                        player.Gold -= itemManager.attackItem[2].Price;
+                                        Console.Clear();
+                                        Console.WriteLine("구매를 완료했습니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                    else if (itemManager.attackItem[2].Price > player.Gold)
+                                    {
+                                        Console.WriteLine("Gold가 부족합니다.");
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("이미 구매한 아이템입니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                case "4":
+                                    if (itemManager.defenseItem[0].BuyCheck == false && itemManager.defenseItem[0].Price <= player.Gold)
+                                    {
+                                        itemManager.defenseItem[0].BuyCheck = true;
+                                        player.Gold -= itemManager.defenseItem[0].Price;
+                                        Console.Clear();
+                                        Console.WriteLine("구매를 완료했습니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                    else if (itemManager.defenseItem[0].Price > player.Gold)
+                                    {
+                                        Console.WriteLine("Gold가 부족합니다.");
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("이미 구매한 아이템입니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                case "5":
+                                    if (itemManager.defenseItem[1].BuyCheck == false && itemManager.defenseItem[1].Price <= player.Gold)
+                                    {
+                                        itemManager.defenseItem[1].BuyCheck = true;
+                                        player.Gold -= itemManager.defenseItem[1].Price;
+                                        Console.Clear();
+                                        Console.WriteLine("구매를 완료했습니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                    else if (itemManager.defenseItem[1].Price > player.Gold)
+                                    {
+                                        Console.WriteLine("Gold가 부족합니다.");
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("이미 구매한 아이템입니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                case "6":
+                                    if (itemManager.defenseItem[2].BuyCheck == false && itemManager.defenseItem[2].Price <= player.Gold)
+                                    {
+                                        itemManager.defenseItem[2].BuyCheck = true;
+                                        player.Gold -= itemManager.defenseItem[2].Price;
+                                        Console.Clear();
+                                        Console.WriteLine("구매를 완료했습니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                    else if (itemManager.defenseItem[2].Price > player.Gold)
+                                    {
+                                        Console.Clear();
+                                        Console.WriteLine();
+                                        Console.WriteLine("Gold가 부족합니다.");
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("이미 구매한 아이템입니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                case "0":
+                                    caseCheck = false;
+                                    Console.Clear();
+                                    return;
+                                default:
+                                    Console.Clear();
+                                    Console.WriteLine("잘못 입력하셨습니다. 뒤로 돌아갑니다.");
+                                    break;
+                            }
+                            break;
+                        case "0":
+                            caseCheck = false;
+                            Console.Clear();
+                            return;
+                        default:
+                            Console.Clear();
+                            Console.WriteLine("잘못 입력하셨습니다. 메인으로 돌아갑니다.");
+                            break;
+                    }
                 }
+           
             }
 
             
