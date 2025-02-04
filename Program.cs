@@ -30,6 +30,7 @@
 
             public void PlayerStat()
             {
+                Console.WriteLine();
                 Console.WriteLine("상태 보기");
                 Console.WriteLine("캐릭터의 정보가 표시됩니다.");
                 Console.WriteLine("LV. " + Level);
@@ -113,19 +114,41 @@
 
             public void StoreMenu()
             {
+                Console.WriteLine();
                 Console.WriteLine("상점");
                 Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.");
                 Console.WriteLine();
                 Console.WriteLine("[보유 골드]\n" + player.Gold);
                 Console.WriteLine();
                 Console.WriteLine("[아이템 목록]");
-
+                Console.WriteLine("- {0}  | 공격력 +{1}  |{2}|  {3} G",ruinSword.Name, ruinSword.Attack, ruinSword.Txt, ruinSword.Price);
+                Console.WriteLine("- {0}  | 공격력 +{1}  |{2}|  {3} G", bronzeAxe.Name, bronzeAxe.Attack, bronzeAxe.Txt, bronzeAxe.Price);
+                Console.WriteLine("- {0}  | 공격력 +{1}  |{2}|  {3} G", spartanSpear.Name, spartanSpear.Attack, spartanSpear.Txt, spartanSpear.Price);
+                Console.WriteLine("- {0}  | 방어력 +{1}  |{2}|  {3} G", trainingArmor.Name, trainingArmor.Defense, trainingArmor.Txt, trainingArmor.Price);
+                Console.WriteLine("- {0}  | 방어력 +{1}  |{2}|  {3} G", IronArmor.Name, IronArmor.Defense, IronArmor.Txt, IronArmor.Price);
+                Console.WriteLine("- {0}  | 방어력 +{1}  |{2}|  {3} G", spartanArmor.Name, spartanArmor.Defense, spartanArmor.Txt, spartanArmor.Price);
+                Console.WriteLine();
+                Console.WriteLine("1. 아이템 구매");
+                Console.WriteLine("0. 나가기");
+                Console.WriteLine();
+                Console.WriteLine("원하시는 행동을 입력해주세요.");
+                Console.Write(">> ");
+                string input = Console.ReadLine();
+                switch (input)
+                {
+                    case "1":
+                        break;
+                    case "0":
+                        Console.Clear();
+                        return;
+                }
             }
         }
 
         public class InGame
         {
             Player player = new Player();
+            Store store = new Store();
             public void InGameMenu()
             {
                 while (true)
@@ -146,6 +169,7 @@
                         case "2":
                             break;
                         case "3":
+                            store.StoreMenu();
                             break;
                         default:
                             Console.WriteLine("잘못 입력하셨습니다. 다시 입력하세요.");
