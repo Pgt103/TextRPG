@@ -273,39 +273,39 @@ namespace TextRPG
                                 if (itemManager.defenseItem[0].Equip == false)
                                 {
                                     itemManager.defenseItem[0].Equip = true;
-                                    player.Attack += itemManager.defenseItem[0].Defense;
+                                    player.Defense += itemManager.defenseItem[0].Defense;
                                     break;
                                 }
                                 else
                                 {
                                     itemManager.defenseItem[0].Equip = false;
-                                    player.Attack = player.Defense;
+                                    player.Defense = player.Defense;
                                     break;
                                 }
                             case "5":
                                 if (itemManager.defenseItem[1].Equip == false)
                                 {
                                     itemManager.defenseItem[1].Equip = true;
-                                    player.Attack += itemManager.defenseItem[1].Defense;
+                                    player.Defense += itemManager.defenseItem[1].Defense;
                                     break;
                                 }
                                 else
                                 {
                                     itemManager.defenseItem[1].Equip = false;
-                                    player.Attack = player.Defense;
+                                    player.Defense = player.Defense;
                                     break;
                                 }
                             case "6":
                                 if (itemManager.defenseItem[2].Equip == false)
                                 {
                                     itemManager.defenseItem[2].Equip = true;
-                                    player.Attack += itemManager.defenseItem[0].Defense;
+                                    player.Defense += itemManager.defenseItem[0].Defense;
                                     break;
                                 }
                                 else
                                 {
                                     itemManager.defenseItem[2].Equip = false;
-                                    player.Attack = player.Defense;
+                                    player.Defense = player.Defense;
                                     break;
                                 }
                             case "0":
