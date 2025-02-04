@@ -1,4 +1,5 @@
 ﻿using System.Reflection.Metadata.Ecma335;
+using static TextRPG.Program;
 
 namespace TextRPG
 {
@@ -17,6 +18,18 @@ namespace TextRPG
 
         public class Player : ICharacter
         {
+            private static Player instance;
+
+            public static Player Instance
+            {
+                get
+                {
+                    if (instance == null)
+                        instance = new Player();
+                    return instance;
+                }
+            }
+
             public int Level { get; set; } = 1;
             public string Name { get; set; } = "Chad";
             public string Job { get; set; } = "전사";
@@ -54,6 +67,8 @@ namespace TextRPG
                         return;
                 }
             }
+
+            
         }
         
         public interface IAttackItem
@@ -119,10 +134,12 @@ namespace TextRPG
 
         public class ItemManager
         {
+            private static ItemManager instance;
+
             public List<AttackItem> attackItem = new List<AttackItem>();
             public List<DefenseItem> defenseItem = new List<DefenseItem>();
 
-            public ItemManager()
+            private ItemManager()
             {
                 attackItem.Add(new AttackItem("낡은 검", 2, "쉽게 볼 수 있는 낡은 검 입니다.", 600, false, false));
                 attackItem.Add(new AttackItem("청동 도끼", 5, "어디선가 사용됐던 거 같은 도끼입니다.", 1500, false, false));
@@ -131,6 +148,16 @@ namespace TextRPG
                 defenseItem.Add(new DefenseItem("수련자 갑옷", 5, "수련에 도움을 주는 갑옷입니다.", 1000, false, false));
                 defenseItem.Add(new DefenseItem("무쇠 갑옷", 9, "무쇠로 만들어져 튼튼한 갑옷입니다.", 2000, false, false));
                 defenseItem.Add(new DefenseItem("스파르타의 갑옷", 15, "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500, false, false));
+            }
+
+            public static ItemManager Instance
+            {
+                get
+                {
+                    if (instance == null)
+                        instance = new ItemManager();
+                    return instance;
+                }
             }
 
             public void ShowItem()
@@ -150,12 +177,12 @@ namespace TextRPG
                 foreach (var item in attackItem)
                 {
                     if(item.BuyCheck == true)
-                        Console.WriteLine("- {0} | 공격력 +{1} | {2}", item.Name, item.Attack, item.Txt);
+                        Console.WriteLine("- {0} | 공격력 +{1} | {2}", IsEquip(item.Name, item.Equip), item.Attack, item.Txt);
                 }
                 foreach (var item in defenseItem)
                 {
                     if (item.BuyCheck == true)
-                        Console.WriteLine("- {0} | 방어력 +{1} | {2}", item.Name, item.Defense, item.Txt);
+                        Console.WriteLine("- {0} | 방어력 +{1} | {2}", IsEquip(item.Name, item.Equip), item.Defense, item.Txt);
                 }
             }
 
@@ -163,16 +190,24 @@ namespace TextRPG
             {
                 return buy == true ? "구매완료" : $"{price} G";
             }
+
+            private string IsEquip(string name, bool eq)
+            {
+                return eq == true ? $"[E]{name}" : name;
+            }
+
         }
 
         public class Inventory
         {
-            ItemManager itemManager = new ItemManager();
+            Player player = Player.Instance;
+            ItemManager itemManager = ItemManager.Instance;
 
-            bool caseCheck = false;
+            bool caseCheck;
 
             public void InventoryMenu()
             {
+                caseCheck = false;
                 Console.WriteLine();
                 Console.WriteLine("인벤토리");
                 Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.");
@@ -180,7 +215,8 @@ namespace TextRPG
                 Console.WriteLine("[아이템 목록]");
                 itemManager.BuyItem();
                 Console.WriteLine();
-                Console.WriteLine("1. 장착 관리");
+                if(caseCheck == false)
+                    Console.WriteLine("1. 장착 관리");
                 Console.WriteLine("0. 나가기");
                 Console.WriteLine();
                 Console.WriteLine("원하시는 행동을 입력해주세요.");
@@ -190,6 +226,97 @@ namespace TextRPG
                 {
                     case "1":
                         caseCheck = true;
+                        Console.Write("장착할 아이템의 번호를 입력하세요 >> ");
+                        input = Console.ReadLine();
+                        switch (input)
+                        {
+                            case "1":
+                                if (itemManager.attackItem[0].Equip == false)
+                                {
+                                    itemManager.attackItem[0].Equip = true;
+                                    player.Attack += itemManager.attackItem[0].Attack;
+                                    break;
+                                }
+                                else
+                                {
+                                    itemManager.attackItem[0].Equip = false;
+                                    player.Attack = player.Attack;
+                                    break;
+                                }
+                            case "2":
+                                if (itemManager.attackItem[1].Equip == false)
+                                {
+                                    itemManager.attackItem[1].Equip = true;
+                                    player.Attack += itemManager.attackItem[1].Attack;
+                                    break;
+                                }
+                                else
+                                {
+                                    itemManager.attackItem[1].Equip = false;
+                                    player.Attack = player.Attack;
+                                    break;
+                                }
+                            case "3":
+                                if (itemManager.attackItem[2].Equip == false)
+                                {
+                                    itemManager.attackItem[2].Equip = true;
+                                    player.Attack += itemManager.attackItem[2].Attack;
+                                    break;
+                                }
+                                else
+                                {
+                                    itemManager.attackItem[2].Equip = false;
+                                    player.Attack = player.Attack;
+                                    break;
+                                }
+                            case "4":
+                                if (itemManager.defenseItem[0].Equip == false)
+                                {
+                                    itemManager.defenseItem[0].Equip = true;
+                                    player.Attack += itemManager.defenseItem[0].Defense;
+                                    break;
+                                }
+                                else
+                                {
+                                    itemManager.defenseItem[0].Equip = false;
+                                    player.Attack = player.Defense;
+                                    break;
+                                }
+                            case "5":
+                                if (itemManager.defenseItem[1].Equip == false)
+                                {
+                                    itemManager.defenseItem[1].Equip = true;
+                                    player.Attack += itemManager.defenseItem[1].Defense;
+                                    break;
+                                }
+                                else
+                                {
+                                    itemManager.defenseItem[1].Equip = false;
+                                    player.Attack = player.Defense;
+                                    break;
+                                }
+                            case "6":
+                                if (itemManager.defenseItem[2].Equip == false)
+                                {
+                                    itemManager.defenseItem[2].Equip = true;
+                                    player.Attack += itemManager.defenseItem[0].Defense;
+                                    break;
+                                }
+                                else
+                                {
+                                    itemManager.defenseItem[2].Equip = false;
+                                    player.Attack = player.Defense;
+                                    break;
+                                }
+                            case "0":
+                                caseCheck = false;
+                                Console.Clear();
+                                return;
+                            default:
+                                Console.Clear();
+                                Console.WriteLine("잘못 입력하셨습니다. 뒤로 돌아갑니다.");
+                                break;
+                        }
                         break;
                     case "0":
                         caseCheck = false;
@@ -201,14 +328,16 @@ namespace TextRPG
                         break;
                 }
             }
+
+
         }
 
         public class Store
         {
-            Player player = new Player();
-            ItemManager itemManager = new ItemManager();
+            Player player = Player.Instance;
+            ItemManager itemManager = ItemManager.Instance;
 
-            bool caseCheck = false;
+            bool caseCheck;
             public void StoreMenu()
             {
                 caseCheck = false;
@@ -254,6 +383,7 @@ namespace TextRPG
                                     else if(itemManager.attackItem[0].Price > player.Gold)
                                     {
                                         Console.WriteLine("Gold가 부족합니다.");
+                                        Console.WriteLine();
                                         break;
                                     }
                                     else
@@ -275,6 +405,7 @@ namespace TextRPG
                                     else if (itemManager.attackItem[1].Price > player.Gold)
                                     {
                                         Console.WriteLine("Gold가 부족합니다.");
+                                        Console.WriteLine();
                                         break;
                                     }
                                     else
@@ -296,6 +427,7 @@ namespace TextRPG
                                     else if (itemManager.attackItem[2].Price > player.Gold)
                                     {
                                         Console.WriteLine("Gold가 부족합니다.");
+                                        Console.WriteLine();
                                         break;
                                     }
                                     else
@@ -317,6 +449,7 @@ namespace TextRPG
                                     else if (itemManager.defenseItem[0].Price > player.Gold)
                                     {
                                         Console.WriteLine("Gold가 부족합니다.");
+                                        Console.WriteLine();
                                         break;
                                     }
                                     else
@@ -338,6 +471,7 @@ namespace TextRPG
                                     else if (itemManager.defenseItem[1].Price > player.Gold)
                                     {
                                         Console.WriteLine("Gold가 부족합니다.");
+                                        Console.WriteLine();
                                         break;
                                     }
                                     else
@@ -359,8 +493,8 @@ namespace TextRPG
                                     else if (itemManager.defenseItem[2].Price > player.Gold)
                                     {
                                         Console.Clear();
-                                        Console.WriteLine();
                                         Console.WriteLine("Gold가 부족합니다.");
+                                        Console.WriteLine();
                                         break;
                                     }
                                     else
@@ -399,7 +533,7 @@ namespace TextRPG
 
         public class InGame
         {
-            Player player = new Player();
+            Player player = Player.Instance;
             Store store = new Store();
             Inventory inventory = new Inventory();
             public void InGameMenu()
