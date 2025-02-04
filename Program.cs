@@ -86,13 +86,14 @@ namespace TextRPG
             public bool Equip { get; set; }
 
 
-            public AttackItem(string name, int attack, string txt, int price, bool BuyCheck)
+            public AttackItem(string name, int attack, string txt, int price, bool buyCheck, bool equipCheck)
             {
                 Name = name;
                 Price = price;
                 Attack = attack;
                 Txt = txt;
-                BuyCheck = false;
+                BuyCheck = buyCheck;
+                Equip = equipCheck;
             }
         }
 
@@ -105,41 +106,56 @@ namespace TextRPG
             public bool BuyCheck { get; set; }
             public bool Equip { get; set; }
 
-            public DefenseItem(string name, int defense, string txt, int price, bool BuyCheck)
+            public DefenseItem(string name, int defense, string txt, int price, bool buyCheck, bool equipCheck)
             {
                 Name = name;
                 Price = price;
                 Defense = defense;
                 Txt = txt;
-                BuyCheck = false;
+                BuyCheck = buyCheck;
+                Equip = equipCheck;
             }
         }
 
         public class ItemManager
         {
-            public List<AttackItem> attackItems = new List<AttackItem>();
-            public List<DefenseItem> defenseItems = new List<DefenseItem>();
+            public List<AttackItem> attackItem = new List<AttackItem>();
+            public List<DefenseItem> defenseItem = new List<DefenseItem>();
 
             public ItemManager()
             {
-                attackItems.Add(new AttackItem("낡은 검", 2, "쉽게 볼 수 있는 낡은 검 입니다.", 600, false));
-                attackItems.Add(new AttackItem("청동 도끼", 5, "어디선가 사용됐던 거 같은 도끼입니다.", 1500, false));
-                attackItems.Add(new AttackItem("스파르타의 창", 7, "스파르타의 전사들이 사용했다는 전설의 창입니다.", 2500, false));
+                attackItem.Add(new AttackItem("낡은 검", 2, "쉽게 볼 수 있는 낡은 검 입니다.", 600, false, false));
+                attackItem.Add(new AttackItem("청동 도끼", 5, "어디선가 사용됐던 거 같은 도끼입니다.", 1500, false, false));
+                attackItem.Add(new AttackItem("스파르타의 창", 7, "스파르타의 전사들이 사용했다는 전설의 창입니다.", 2500, false, false));
 
-                defenseItems.Add(new DefenseItem("수련자 갑옷", 5, "수련에 도움을 주는 갑옷입니다.", 1000, false));
-                defenseItems.Add(new DefenseItem("무쇠 갑옷", 9, "무쇠로 만들어져 튼튼한 갑옷입니다.", 2000, false));
-                defenseItems.Add(new DefenseItem("스파르타의 갑옷", 15, "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500, false));
+                defenseItem.Add(new DefenseItem("수련자 갑옷", 5, "수련에 도움을 주는 갑옷입니다.", 1000, false, false));
+                defenseItem.Add(new DefenseItem("무쇠 갑옷", 9, "무쇠로 만들어져 튼튼한 갑옷입니다.", 2000, false, false));
+                defenseItem.Add(new DefenseItem("스파르타의 갑옷", 15, "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500, false, false));
             }
 
-            public void ShowItems()
+            public void ShowItem()
             {
-                foreach (var item in attackItems)
+                foreach (var item in attackItem)
                 {
                     Console.WriteLine("- {0} | 공격력 +{1} | {2} | {3}", item.Name, item.Attack, item.Txt, BuyOrNot(item.Price, item.BuyCheck));
                 }
-                foreach (var item in defenseItems)
+                foreach (var item in defenseItem)
                 {
                     Console.WriteLine("- {0} | 방어력 +{1} | {2} | {3}", item.Name, item.Defense, item.Txt, BuyOrNot(item.Price, item.BuyCheck));
+                }
+            }
+
+            public void BuyItem()
+            {
+                foreach (var item in attackItem)
+                {
+                    if (item.BuyCheck == true) 
+                        Console.WriteLine("- {0} | 공격력 +{1} | {2} | {3}", item.Name, item.Attack, item.Txt, BuyOrNot(item.Price, item.BuyCheck));
+                }
+                foreach (var item in defenseItem)
+                {
+                    if (item.BuyCheck == true)
+                        Console.WriteLine("- {0} | 방어력 +{1} | {2} | {3}", item.Name, item.Defense, item.Txt, BuyOrNot(item.Price, item.BuyCheck));
                 }
             }
 
@@ -151,7 +167,40 @@ namespace TextRPG
 
         public class Inventory
         {
+            ItemManager itemManager = new ItemManager();
 
+            bool caseCheck = false;
+
+            public void InventoryMenu()
+            {
+                Console.WriteLine();
+                Console.WriteLine("인벤토리");
+                Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.");
+                Console.WriteLine();
+                Console.WriteLine("[아이템 목록]");
+                itemManager.BuyItem();
+                Console.WriteLine();
+                Console.WriteLine("1. 장착 관리");
+                Console.WriteLine("0. 나가기");
+                Console.WriteLine();
+                Console.WriteLine("원하시는 행동을 입력해주세요.");
+                Console.Write(">> ");
+                string input = Console.ReadLine();
+                switch (input)
+                {
+                    case "1":
+                        caseCheck = true;
+                        break;
+                    case "0":
+                        caseCheck = false;
+                        Console.Clear();
+                        return;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("잘못 입력하셨습니다. 메인으로 돌아갑니다.");
+                        break;
+                }
+            }
         }
 
         public class Store
@@ -162,7 +211,6 @@ namespace TextRPG
             bool caseCheck = false;
             public void StoreMenu()
             {
-                ItemManager itemManager = new ItemManager();
                 Console.WriteLine();
                 Console.WriteLine("상점");
                 Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.");
@@ -170,7 +218,7 @@ namespace TextRPG
                 Console.WriteLine("[보유 골드]\n" + player.Gold);
                 Console.WriteLine();
                 Console.WriteLine("[아이템 목록]");
-                itemManager.ShowItems();
+                itemManager.ShowItem();
                 Console.WriteLine();
                 if(caseCheck == false)
                     Console.WriteLine("1. 아이템 구매");
@@ -189,7 +237,8 @@ namespace TextRPG
                         Console.Clear();
                         return;
                     default:
-                        Console.WriteLine("정확한 답변을 입력해주세요");
+                        Console.Clear();
+                        Console.WriteLine("잘못 입력하셨습니다. 메인으로 돌아갑니다.");
                         break;
                 }
             }
@@ -203,6 +252,7 @@ namespace TextRPG
         {
             Player player = new Player();
             Store store = new Store();
+            Inventory inventory = new Inventory();
             public void InGameMenu()
             {
                 while (true)
@@ -221,11 +271,13 @@ namespace TextRPG
                             player.PlayerStat();
                             break;
                         case "2":
+                            inventory.InventoryMenu();
                             break;
                         case "3":
                             store.StoreMenu();
                             break;
                         default:
+                            Console.Clear();
                             Console.WriteLine("잘못 입력하셨습니다. 다시 입력하세요.");
                             break;
                     }
