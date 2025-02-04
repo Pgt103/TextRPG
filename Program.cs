@@ -533,12 +533,57 @@ namespace TextRPG
 
         }
 
+        public class Sleep
+        {
+            Player player = Player.Instance;
+
+            public void Healing()
+            {
+                Console.WriteLine();
+                Console.WriteLine("휴식하기");
+                Console.WriteLine($"500 G 를 내면 체력을 회복할 수 있습니다. (보유 골드 : {player.Gold}");
+                Console.WriteLine("1. 휴식하기");
+                Console.WriteLine("0. 나가기");
+                Console.WriteLine();
+                Console.WriteLine("원하시는 행동을 입력해주세요.");
+                Console.Write(">> ");
+                string input = Console.ReadLine();
+                switch (input)
+                {
+                    case "1":
+                        if(player.Gold >= 500)
+                        {
+                            player.Gold -= 500;
+                            player.Health = 100;
+                            Console.Clear();
+                            Console.WriteLine("500 G 를 지불하고 휴식을 취했습니다.");
+                            Console.WriteLine();
+                            break;
+                        }
+                        else
+                        {
+                            Console.Clear();
+                            Console.WriteLine("보유한 금액이 부족합니다.");
+                            Console.WriteLine();
+                            break;
+                        }
+                    case "0":
+                        Console.Clear();
+                        return;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("잘못 입력하셨습니다. 메인 화면으로 돌아갑니다");
+                        break;
+                }
+            }
+        }
 
         public class InGame
         {
             Player player = Player.Instance;
             Store store = new Store();
             Inventory inventory = new Inventory();
+            Sleep sleep = new Sleep();
             public void InGameMenu()
             {
                 while (true)
@@ -546,6 +591,7 @@ namespace TextRPG
                     Console.WriteLine("1. 상태보기");
                     Console.WriteLine("2. 인벤토리");
                     Console.WriteLine("3. 상점");
+                    Console.WriteLine("4. 휴식하기");
                     Console.WriteLine();
                     Console.WriteLine("원하시는 행동을 입력해주세요.");
                     Console.Write(">> ");
@@ -561,6 +607,9 @@ namespace TextRPG
                             break;
                         case "3":
                             store.StoreMenu();
+                            break;
+                        case "4":
+                            sleep.Healing();
                             break;
                         default:
                             Console.Clear();
