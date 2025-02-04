@@ -1,4 +1,6 @@
-﻿namespace TextRPG
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace TextRPG
 {
     internal class Program
     {
@@ -60,6 +62,8 @@
             int Price { get; set; }
             int Attack { get; set; }
             string Txt { get; set; }
+            bool BuyCheck {  get; set; }
+            bool Equip { get; set; }
         }
 
         public interface IDefenseItem
@@ -68,6 +72,8 @@
             int Price { get; set; }
             int Defense { get; set; }
             string Txt { get; set; }
+            bool BuyCheck { get; set; }
+            bool Equip { get; set; }
         }
 
         public class AttackItem : IAttackItem
@@ -76,13 +82,17 @@
             public int Price { get; set; }
             public int Attack { get; set; }
             public string Txt { get; set; }
+            public bool BuyCheck { get; set; }
+            public bool Equip { get; set; }
 
-            public AttackItem(string name, int attack, string txt, int price )
+
+            public AttackItem(string name, int attack, string txt, int price, bool BuyCheck)
             {
                 Name = name;
                 Price = price;
                 Attack = attack;
                 Txt = txt;
+                BuyCheck = false;
             }
         }
 
@@ -92,25 +102,37 @@
             public int Price { get; set; }
             public int Defense { get; set; }
             public string Txt { get; set; }
+            public bool BuyCheck { get; set; }
+            public bool Equip { get; set; }
 
-            public DefenseItem(string name, int defense, string txt, int price)
+            public DefenseItem(string name, int defense, string txt, int price, bool BuyCheck)
             {
                 Name = name;
                 Price = price;
                 Defense = defense;
                 Txt = txt;
+                BuyCheck = false;
             }
         }
 
         public class Store
         {
             Player player = new Player();
-            AttackItem ruinSword = new AttackItem("낡은 검", 2, " 쉽게 볼 수 있는 낡은 검 입니다.            ", 600);
-            AttackItem bronzeAxe = new AttackItem("청동 도끼", 5, "  어디선가 사용됐던거 같은 도끼입니다.        ", 1500);
-            AttackItem spartanSpear = new AttackItem("스파르타의 창", 7, " 스파르타의 전사들이 사용했다는 전설의 창입니다. ", 2500);
-            DefenseItem trainingArmor = new DefenseItem("수련자 갑옷", 5, " 수련에 도움을 주는 갑옷입니다.             ", 1000);
-            DefenseItem IronArmor = new DefenseItem("무쇠 갑옷", 9, " 무쇠로 만들어져 튼튼한 갑옷입니다.           ", 2000);
-            DefenseItem spartanArmor = new DefenseItem("스파르타의 갑옷", 15, " 스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500);
+            AttackItem ruinSword = new AttackItem("낡은 검  ", 2, " 쉽게 볼 수 있는 낡은 검 입니다.            ", 600, false);
+            AttackItem bronzeAxe = new AttackItem("청동 도끼  ", 5, "  어디선가 사용됐던거 같은 도끼입니다.        ", 1500, false);
+            AttackItem spartanSpear = new AttackItem("스파르타의 창  ", 7, " 스파르타의 전사들이 사용했다는 전설의 창입니다. ", 2500, false);
+            DefenseItem trainingArmor = new DefenseItem("수련자 갑옷  ", 5, " 수련에 도움을 주는 갑옷입니다.             ", 1000, false);
+            DefenseItem IronArmor = new DefenseItem("무쇠 갑옷  ", 9, " 무쇠로 만들어져 튼튼한 갑옷입니다.           ", 2000, false);
+            DefenseItem spartanArmor = new DefenseItem("스파르타의 갑옷  ", 15, " 스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500, false);
+
+            bool caseCheck = false;
+
+            private string BuyOrNot(int price, bool buy)
+            {
+                return buy == true ? "구매완료" : $"{price} G";
+            }
+
+
 
             public void StoreMenu()
             {
@@ -121,14 +143,15 @@
                 Console.WriteLine("[보유 골드]\n" + player.Gold);
                 Console.WriteLine();
                 Console.WriteLine("[아이템 목록]");
-                Console.WriteLine("- {0}  | 공격력 +{1}  |{2}|  {3} G",ruinSword.Name, ruinSword.Attack, ruinSword.Txt, ruinSword.Price);
-                Console.WriteLine("- {0}  | 공격력 +{1}  |{2}|  {3} G", bronzeAxe.Name, bronzeAxe.Attack, bronzeAxe.Txt, bronzeAxe.Price);
-                Console.WriteLine("- {0}  | 공격력 +{1}  |{2}|  {3} G", spartanSpear.Name, spartanSpear.Attack, spartanSpear.Txt, spartanSpear.Price);
-                Console.WriteLine("- {0}  | 방어력 +{1}  |{2}|  {3} G", trainingArmor.Name, trainingArmor.Defense, trainingArmor.Txt, trainingArmor.Price);
-                Console.WriteLine("- {0}  | 방어력 +{1}  |{2}|  {3} G", IronArmor.Name, IronArmor.Defense, IronArmor.Txt, IronArmor.Price);
-                Console.WriteLine("- {0}  | 방어력 +{1}  |{2}|  {3} G", spartanArmor.Name, spartanArmor.Defense, spartanArmor.Txt, spartanArmor.Price);
+                Console.WriteLine("- {0}| 공격력 +{1}  |{2}|  {3}", ruinSword.Name, ruinSword.Attack, ruinSword.Txt, BuyOrNot(ruinSword.Price, ruinSword.BuyCheck));
+                Console.WriteLine("- {0}| 공격력 +{1}  |{2}|  {3}", bronzeAxe.Name, bronzeAxe.Attack, bronzeAxe.Txt, BuyOrNot(bronzeAxe.Price, bronzeAxe.BuyCheck));
+                Console.WriteLine("- {0}| 공격력 +{1}  |{2}|  {3}", spartanSpear.Name, spartanSpear.Attack, spartanSpear.Txt, BuyOrNot(spartanSpear.Price, spartanSpear.BuyCheck));
+                Console.WriteLine("- {0}| 방어력 +{1}  |{2}|  {3}", trainingArmor.Name, trainingArmor.Defense, trainingArmor.Txt, BuyOrNot(trainingArmor.Price, trainingArmor.BuyCheck));
+                Console.WriteLine("- {0}| 방어력 +{1}  |{2}|  {3}", IronArmor.Name, IronArmor.Defense, IronArmor.Txt, BuyOrNot(IronArmor.Price, IronArmor.BuyCheck));
+                Console.WriteLine("- {0}| 방어력 +{1}  |{2}|  {3}", spartanArmor.Name, spartanArmor.Defense, spartanArmor.Txt, BuyOrNot(spartanArmor.Price, spartanArmor.BuyCheck));
                 Console.WriteLine();
-                Console.WriteLine("1. 아이템 구매");
+                if(caseCheck == false)
+                    Console.WriteLine("1. 아이템 구매");
                 Console.WriteLine("0. 나가기");
                 Console.WriteLine();
                 Console.WriteLine("원하시는 행동을 입력해주세요.");
@@ -137,13 +160,22 @@
                 switch (input)
                 {
                     case "1":
+                        caseCheck = true;
                         break;
                     case "0":
+                        caseCheck = false;
                         Console.Clear();
                         return;
+                    default:
+                        Console.WriteLine("정확한 답변을 입력해주세요");
+                        break;
                 }
             }
+
+            
+
         }
+
 
         public class InGame
         {
