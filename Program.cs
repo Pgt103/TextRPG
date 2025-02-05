@@ -5,15 +5,15 @@ namespace TextRPG
 {
     internal class Program
     {
-        public interface ICharacter
+        public interface ICharacter // 플레이어 캐릭터 정의 인터페이스
         {
-            int Level { get; set; }
-            string Name { get; set; }
-            string Job { get; set; }
-            int Attack { get; set; }
-            int Defense { get; set; }
-            int Health { get; set; }
-            int Gold { get; set; }
+            int Level { get; set; } // 플레이어의 레벨
+            string Name { get; set; } // 플레이어의 이름
+            string Job { get; set; } // 플레이어의 직업
+            int Attack { get; set; } // 플레이어의 공격력
+            int Defense { get; set; } // 플레이어의 방어력
+            int Health { get; set; } // 플레이어의 체력
+            int Gold { get; set; } // 소지금
         }
 
         public class Player : ICharacter
@@ -39,6 +39,7 @@ namespace TextRPG
             public int Gold { get; set; } = 3000;
             public AttackItem WeaponItem { get; set; }
             public DefenseItem ArmorItem{ get; set; }
+            public AccessoryItem AccessoryItem { get; set; }
 
             public Player()
             {
@@ -170,30 +171,104 @@ namespace TextRPG
                 }
             }
 
+            public void BuyAccessory(AccessoryItem item)
+            {
+                if (item.BuyCheck == false && item.Price <= Gold)
+                {
+                    item.BuyCheck = true;
+                    Gold -= item.Price;
+                    Console.Clear();
+                    Console.WriteLine("구매를 완료했습니다.");
+                    Console.WriteLine();
+                }
+                else if (item.Price > Gold)
+                {
+                    Console.WriteLine("Gold가 부족합니다.");
+                    Console.WriteLine();
+                }
+                else
+                {
+                    Console.WriteLine("이미 구매한 아이템입니다.");
+                    Console.WriteLine();
+                }
+            }
+
             public void EquipWeapon(AttackItem newItem)
             {
-                if (WeaponItem != null)
+                if(newItem.BuyCheck)
                 {
-                    Attack -= WeaponItem.Attack;
-                    WeaponItem.Equip = false;
-                }
+                    if (WeaponItem != null)
+                    {
+                        Attack -= WeaponItem.Attack;
+                        WeaponItem.Equip = false;
+                    }
 
-                WeaponItem = newItem;
-                Attack += WeaponItem.Attack;
-                WeaponItem.Equip = true;
+                    WeaponItem = newItem;
+                    Attack += WeaponItem.Attack;
+                    WeaponItem.Equip = true;
+                    Console.Clear();
+                    Console.WriteLine("무기를 장착했습니다.");
+                    Console.WriteLine();
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("없는 장비입니다.");
+                    Console.WriteLine();
+                }
+                
             }
 
             public void EquipArmor(DefenseItem newItem)
             {
-                if (ArmorItem != null)
+                if(newItem.BuyCheck)
                 {
-                    Defense -= ArmorItem.Defense;
-                    ArmorItem.Equip = false;
-                }
+                    if (ArmorItem != null)
+                    {
+                        Defense -= ArmorItem.Defense;
+                        ArmorItem.Equip = false;
+                    }
 
-                ArmorItem = newItem;
-                Defense += ArmorItem.Defense;
-                ArmorItem.Equip = true;
+                    ArmorItem = newItem;
+                    Defense += ArmorItem.Defense;
+                    ArmorItem.Equip = true;
+                    Console.Clear();
+                    Console.WriteLine("방어구를 장착했습니다.");
+                    Console.WriteLine();
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("없는 장비입니다.");
+                    Console.WriteLine();
+                }
+            }
+
+            public void EquipAccessory(AccessoryItem newItem)
+            {
+                if(newItem.BuyCheck)
+                {
+                    if (AccessoryItem != null)
+                    {
+                        Attack -= AccessoryItem.Attack;
+                        Defense -= AccessoryItem.Defense;
+                        AccessoryItem.Equip = false;
+                    }
+
+                    AccessoryItem = newItem;
+                    Attack += AccessoryItem.Attack;
+                    Defense += AccessoryItem.Defense;
+                    AccessoryItem.Equip = true;
+                    Console.Clear();
+                    Console.WriteLine("장신구를 장착했습니다.");
+                    Console.WriteLine();
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("없는 장비입니다.");
+                    Console.WriteLine();
+                }
             }
         }
         
@@ -211,6 +286,17 @@ namespace TextRPG
         {
             string Name { get; set; }
             int Price { get; set; }
+            int Defense { get; set; }
+            string Txt { get; set; }
+            bool BuyCheck { get; set; }
+            bool Equip { get; set; }
+        }
+
+        public interface IAccessory
+        {
+            string Name { get; set; }
+            int Price { get; set; }
+            int Attack { get; set; }
             int Defense { get; set; }
             string Txt { get; set; }
             bool BuyCheck { get; set; }
@@ -258,12 +344,36 @@ namespace TextRPG
             }
         }
 
+        public class AccessoryItem : IAccessory
+        {
+            public string Name { get; set; }
+            public int Price { get; set; }
+            public int Attack { get; set; }
+            public int Defense { get; set; }
+            public string Txt { get; set; }
+            public bool BuyCheck { get; set; }
+            public bool Equip { get; set; }
+
+
+            public AccessoryItem(string name, int attack, int defense, string txt, int price, bool buyCheck, bool equipCheck)
+            {
+                Name = name;
+                Price = price;
+                Attack = attack;
+                Defense = defense;
+                Txt = txt;
+                BuyCheck = buyCheck;
+                Equip = equipCheck;
+            }
+        }
+
         public class ItemManager
         {
             private static ItemManager instance;
 
             public List<AttackItem> attackItem = new List<AttackItem>();
             public List<DefenseItem> defenseItem = new List<DefenseItem>();
+            public List<AccessoryItem> accessoryItem = new List<AccessoryItem>();
 
             private ItemManager()
             {
@@ -274,6 +384,9 @@ namespace TextRPG
                 defenseItem.Add(new DefenseItem("4 수련자 갑옷", 5, "수련에 도움을 주는 갑옷입니다.", 1000, false, false));
                 defenseItem.Add(new DefenseItem("5 무쇠 갑옷", 9, "무쇠로 만들어져 튼튼한 갑옷입니다.", 2000, false, false));
                 defenseItem.Add(new DefenseItem("6 스파르타의 갑옷", 15, "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500, false, false));
+
+                accessoryItem.Add(new AccessoryItem("7 철 반지", 1, 1, "아무 특색없는 반지입니다.", 500, false, false));
+                accessoryItem.Add(new AccessoryItem("8 오래된 반지", 5, 5, "왕의 반지입니다.", 2500, false, false));
             }
 
             public static ItemManager Instance // 싱글톤 화
@@ -296,6 +409,10 @@ namespace TextRPG
                 {
                     Console.WriteLine("- {0} | 방어력 +{1} | {2} | {3}", item.Name, item.Defense, item.Txt, BuyOrNot(item.Price, item.BuyCheck));
                 }
+                foreach (var item in accessoryItem)
+                {
+                    Console.WriteLine("- {0} | 공격력 +{1} | 방어력 +{2} | {3} | {4}", item.Name, item.Attack ,item.Defense, item.Txt, BuyOrNot(item.Price, item.BuyCheck));
+                }
             }
 
             public void BuyItem() // 구입한 아이템을 인벤토리에 표시해주는 역할
@@ -309,6 +426,11 @@ namespace TextRPG
                 {
                     if (item.BuyCheck == true)
                         Console.WriteLine("- {0} | 방어력 +{1} | {2}", IsEquip(item.Name, item.Equip), item.Defense, item.Txt);
+                }
+                foreach (var item in accessoryItem)
+                {
+                    if (item.BuyCheck == true)
+                        Console.WriteLine("- {0} | 공격력 +{1} | 방어력 +{2} | {3} | {4}", item.Name, item.Attack, item.Defense, item.Txt, BuyOrNot(item.Price, item.BuyCheck));
                 }
             }
 
@@ -374,6 +496,12 @@ namespace TextRPG
                                 break;
                             case "6":
                                 player.EquipArmor(itemManager.defenseItem[2]);
+                                break;
+                            case "7":
+                                player.EquipAccessory(itemManager.accessoryItem[0]);
+                                break;
+                            case "8":
+                                player.EquipAccessory(itemManager.accessoryItem[1]);
                                 break;
                             case "0":
                                 caseCheck = false;
@@ -467,6 +595,12 @@ namespace TextRPG
                                     break;
                                 case "6":
                                     player.BuyArmor(itemManager.defenseItem[2]);
+                                    break;
+                                case "7":
+                                    player.BuyAccessory(itemManager.accessoryItem[0]);
+                                    break;
+                                case "8":
+                                    player.BuyAccessory(itemManager.accessoryItem[1]);
                                     break;
                                 case "0":
                                     caseCheck = false;
