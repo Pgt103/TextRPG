@@ -20,7 +20,7 @@ namespace TextRPG
         {
             private static Player instance;
 
-            public static Player Instance
+            public static Player Instance // 싱글톤 선언
             {
                 get
                 {
@@ -30,100 +30,106 @@ namespace TextRPG
                 }
             }
 
-            public int Level { get; set; } = 1;
-            public string Name { get; set; } = "Chad";
-            public string Job { get; set; } = "전사";
-            public int Attack { get; set; } = 10;
-            public int Defense { get; set; } = 5;
-            public int Health { get; set; } = 100;
-            public int Gold { get; set; } = 3000;
-            public int DungeonClear { get; set; }
-            public AttackItem WeaponItem { get; set; }
-            public DefenseItem ArmorItem{ get; set; }
-            public AccessoryItem AccessoryItem { get; set; }
+            // Player 인터페이스 재정의. 플레이어의 기본 스탯 설정
+            public int Level { get; set; } = 1; // 기본 레벨은 1부터 시작
+            public string Name { get; set; } = "Chad"; // 이름
+            public string Job { get; set; } = "전사"; // 직업
+            public int Attack { get; set; } = 10; // 기본 공격력 10
+            public int Defense { get; set; } = 5; // 기본 방어력 5
+            public int Health { get; set; } = 100; // 기본 체력 100
+            public int Gold { get; set; } = 3000; // 기본 소지금 3000
+            public int DungeonClear { get; set; } // 던전 클리어 횟수
+            public AttackItem WeaponItem { get; set; } // 무기 장착 슬롯
+            public DefenseItem ArmorItem{ get; set; } // 방어구 장착 슬롯
+            public AccessoryItem AccessoryItem { get; set; } // 액세서리 장착 슬롯
 
-            public Player()
+            public Player() // 플레이어 생성자. 아무것도 적지않아 기본 생성자 생성
             {
                 
             }
 
-            public void PlayerStat()
+            public void PlayerStat() // 플레이어의 현재 상태 확인
             {
-
-
                 Console.WriteLine();
                 Console.WriteLine("상태 보기");
                 Console.WriteLine("캐릭터의 정보가 표시됩니다.");
-                Console.WriteLine("LV. " + (Level + (DungeonClear / 2)));
-                Console.WriteLine(Name + " " + "({0})", Job);
+                Console.WriteLine("LV. " + (Level + (DungeonClear / 2))); // 던전 클리어 횟수 2회당 1레벨 증가
+                Console.WriteLine(Name + " " + "({0})", Job); // 이름과 직업
+                // 각각 공격력, 방어력, 체력 출력. 각 스탯은 현재 레벨에 따라 공격력 0.5, 방어력 1, 체력 10 증가.
                 Console.WriteLine("공격력 : " + (Attack + ((Level + (DungeonClear / 2)) * 0.5f - 0.5f)) + $"{PlusATK(Attack)}");
                 Console.WriteLine("방어력 : " + (Defense + ((Level + (DungeonClear / 2)) * 1 - 1)) + $"{PlusDFS(Defense)}");
                 Console.WriteLine("체 력 : " + (Health + (Level + (DungeonClear / 2)) * 10 - 10));
-                Console.WriteLine("Gold : " + Gold);
+                Console.WriteLine("Gold : " + Gold); // 소지금
                 Console.WriteLine();
-                Console.WriteLine("0. 나가기");
+                Console.WriteLine("0. 나가기"); // 상태창 나가기 안내
                 Console.WriteLine();
                 Console.WriteLine("원하시는 행동을 입력해주세요.");
                 Console.Write(">> ");
                 string input = Console.ReadLine();
-                switch (input)
+                switch (input) 
                 {
                     case "0":
                         Console.Clear();
-                        return;
+                        return; // 상태창 나가기
                 }
             }
 
-            private string PlusATK(int num)
+            private string PlusATK(int num) // 장비 장착 시 공격력 변화치 개별 표기, 레벨에 따른 스탯변화는 반영하지 않음
             {
-                int defAtk = 10;
-                return num > defAtk ? $"(+{num - defAtk})" : "";
+                float defAtk = 10 + ((Level + (DungeonClear / 2)) * 0.5f - 0.5f);
+                return num > defAtk ? $"(+{num - defAtk})" : ""; // 기본 공격력보다 높을 시 추가 공격력 표기, 그렇지 않을 시 표기하지 않음
             }
 
-            private string PlusDFS(int num)
+            private string PlusDFS(int num) // 장비 장착 시 방어력 변화치 개별 표기, 레벨에 따른 스탯변화는 반영하지 않음
             {
-                int defDfs = 5;
-                return num > defDfs ? $"(+{num - defDfs})" : "";
+                int defDfs = 5 + ((Level + (DungeonClear / 2)) * 1 - 1);
+                return num > defDfs ? $"(+{num - defDfs})" : ""; // 기본 방어력보다 높을 시 추가 방어력 표기, 그렇지 않을 시 표기하지 않음
             }
 
-            public void BuyWeapon(AttackItem item)
+            public void BuyWeapon(AttackItem item) // 장비 구매
             {
-                if (item.BuyCheck == false && item.Price <= Gold)
+                if (item.BuyCheck == false && item.Price <= Gold) // 아직 구매하지 않음 and 현재 소지금이 가격보다 높거나 같을 시
                 {
-                    item.BuyCheck = true;
-                    Gold -= item.Price;
+                    item.BuyCheck = true; // 구매 표시
+                    Gold -= item.Price; // 소지금 차감
                     Console.Clear();
                     Console.WriteLine("구매를 완료했습니다.");
                     Console.WriteLine();
                 }
-                else if (item.Price > Gold)
+                else if (item.Price > Gold) // 소지금이 부족할 시
                 {
                     Console.WriteLine("Gold가 부족합니다.");
                     Console.WriteLine();
                 }
-                else
+                else // 구매한 상품일 시
                 {
                     Console.WriteLine("이미 구매한 아이템입니다.");
                     Console.WriteLine();
                 }
             }
 
-            public void SellWeapon(AttackItem item)
-            {
-                float sellPrice = 0.85f;
+            // 장비 판매 메서드. 3가지 전부 작동방식이 같으나 판매하는 장비가 장착중일 시 장비의 스탯만큼 차감하는 스탯의 종류만 다르다.
 
-                if (item.BuyCheck == true)
+            public void SellWeapon(AttackItem item) // 무기 판매
+            {
+                float sellPrice = 0.85f; // 장비 판매 시 구매한 가격의 85%을 돌려받는다
+
+                if (item.BuyCheck == true) // 예전에 샀던 장비일때
                 {
-                    item.BuyCheck = false;
-                    item.Equip = false;
-                    Attack -= item.Attack;
-                    Gold += (int)(item.Price * sellPrice);
+                    item.BuyCheck = false; // 구매 표시 해제
+                    if(item.Equip == true) // 장착 중인 장비일때
+                    {
+                        item.Equip = false; //장착 해제
+                        Attack -= item.Attack; // 장비의 공격력을 차감
+                    }
+                    Gold += (int)(item.Price * sellPrice); // 판매한 금액을 소지금에 추가
                     Console.Clear();
                     Console.WriteLine("판매를 완료했습니다.");
                     Console.WriteLine();
                 }
-                else
+                else // 아직 없는 장비일 때
                 {
+                    Console.Clear();
                     Console.WriteLine("이미 판매하거나 구매하지 않은 아이템입니다.");
                     Console.WriteLine();
                 }
@@ -136,8 +142,11 @@ namespace TextRPG
                 if (item.BuyCheck == true)
                 {
                     item.BuyCheck = false;
-                    item.Equip = false;
-                    Defense -= item.Defense;
+                    if(item.Equip == true)
+                    {
+                        item.Equip = false;
+                        Defense -= item.Defense;
+                    }
                     Gold += (int)(item.Price * sellPrice);
                     Console.Clear();
                     Console.WriteLine("판매를 완료했습니다.");
@@ -145,6 +154,33 @@ namespace TextRPG
                 }
                 else
                 {
+                    Console.Clear();
+                    Console.WriteLine("이미 판매하거나 구매하지 않은 아이템입니다.");
+                    Console.WriteLine();
+                }
+            }
+
+            public void SellAccessory(AccessoryItem item)
+            {
+                float sellPrice = 0.85f;
+
+                if (item.BuyCheck == true)
+                {
+                    item.BuyCheck = false;
+                    if(item.Equip == true)
+                    {
+                        item.Equip = false;
+                        Attack -= item.Attack;
+                        Defense -= item.Defense;
+                    }
+                    Gold += (int)(item.Price * sellPrice);
+                    Console.Clear();
+                    Console.WriteLine("판매를 완료했습니다.");
+                    Console.WriteLine();
+                }
+                else
+                {
+                    Console.Clear();
                     Console.WriteLine("이미 판매하거나 구매하지 않은 아이템입니다.");
                     Console.WriteLine();
                 }
@@ -717,9 +753,19 @@ namespace TextRPG
             public void DungeonClear()
             {
                 player.DungeonClear++;
-                Console.Clear();
-                Console.WriteLine($"던전 클리어! (클리어 횟수 : {player.DungeonClear})");
-                Console.WriteLine();
+                player.Health -= 30;
+                if(player.Health < 0)
+                {
+                    player.Health = 0;
+                    Console.Clear();
+                    Console.WriteLine("던전 클리어 실패");
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine($"던전 클리어! (클리어 횟수 : {player.DungeonClear})\n현재 체력 : {player.Health}");
+                    Console.WriteLine();
+                }
             }
         }
 
@@ -734,6 +780,12 @@ namespace TextRPG
             {
                 while (true)
                 {
+                    if(player.Health == 0)
+                    {
+                        Console.WriteLine("사망했습니다.");
+                        break;
+                    }
+                        
                     Console.WriteLine("1. 상태보기");
                     Console.WriteLine("2. 인벤토리");
                     Console.WriteLine("3. 상점");
