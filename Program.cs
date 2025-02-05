@@ -1,4 +1,5 @@
-﻿using System.Reflection.Metadata.Ecma335;
+﻿using System.Reflection.Emit;
+using System.Reflection.Metadata.Ecma335;
 using static TextRPG.Program;
 
 namespace TextRPG
@@ -71,6 +72,10 @@ namespace TextRPG
                     case "0":
                         Console.Clear();
                         return; // 상태창 나가기
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("잘못입력하셨습니다. 메인화면으로 돌아갑니다.");
+                        break;
                 }
             }
 
@@ -86,27 +91,7 @@ namespace TextRPG
                 return num > defDfs ? $"(+{num - defDfs})" : ""; // 기본 방어력보다 높을 시 추가 방어력 표기, 그렇지 않을 시 표기하지 않음
             }
 
-            public void BuyWeapon(AttackItem item) // 장비 구매
-            {
-                if (item.BuyCheck == false && item.Price <= Gold) // 아직 구매하지 않음 and 현재 소지금이 가격보다 높거나 같을 시
-                {
-                    item.BuyCheck = true; // 구매 표시
-                    Gold -= item.Price; // 소지금 차감
-                    Console.Clear();
-                    Console.WriteLine("구매를 완료했습니다.");
-                    Console.WriteLine();
-                }
-                else if (item.Price > Gold) // 소지금이 부족할 시
-                {
-                    Console.WriteLine("Gold가 부족합니다.");
-                    Console.WriteLine();
-                }
-                else // 구매한 상품일 시
-                {
-                    Console.WriteLine("이미 구매한 아이템입니다.");
-                    Console.WriteLine();
-                }
-            }
+            
 
             // 장비 판매 메서드. 3가지 전부 작동방식이 같으나 판매하는 장비가 장착중일 시 장비의 스탯만큼 차감하는 스탯의 종류만 다르다.
 
@@ -135,7 +120,7 @@ namespace TextRPG
                 }
             }
 
-            public void SellArmor(DefenseItem item)
+            public void SellArmor(DefenseItem item) // 방어구 판매
             {
                 float sellPrice = 0.85f;
 
@@ -160,7 +145,7 @@ namespace TextRPG
                 }
             }
 
-            public void SellAccessory(AccessoryItem item)
+            public void SellAccessory(AccessoryItem item) // 액세서리 판매
             {
                 float sellPrice = 0.85f;
 
@@ -186,7 +171,31 @@ namespace TextRPG
                 }
             }
 
-            public void BuyArmor(DefenseItem item)
+            // 장비 구매 메서드. 구매하지 않은 장비이거나 소지금이 가격보다 높거나 같을 때 장비 구매 후 소지금 차감.
+
+            public void BuyWeapon(AttackItem item) // 장비 구매. 무기 구매
+            {
+                if (item.BuyCheck == false && item.Price <= Gold) // 아직 구매하지 않음 and 현재 소지금이 가격보다 높거나 같을 시
+                {
+                    item.BuyCheck = true; // 구매 표시
+                    Gold -= item.Price; // 소지금 차감
+                    Console.Clear();
+                    Console.WriteLine("구매를 완료했습니다.");
+                    Console.WriteLine();
+                }
+                else if (item.Price > Gold) // 소지금이 부족할 시
+                {
+                    Console.WriteLine("Gold가 부족합니다.");
+                    Console.WriteLine();
+                }
+                else // 구매한 상품일 시
+                {
+                    Console.WriteLine("이미 구매한 아이템입니다.");
+                    Console.WriteLine();
+                }
+            }
+
+            public void BuyArmor(DefenseItem item) // 방어구 구매
             {
                 if (item.BuyCheck == false && item.Price <= Gold)
                 {
@@ -208,7 +217,7 @@ namespace TextRPG
                 }
             }
 
-            public void BuyAccessory(AccessoryItem item)
+            public void BuyAccessory(AccessoryItem item) // 액세서리 구매
             {
                 if (item.BuyCheck == false && item.Price <= Gold)
                 {
@@ -229,25 +238,27 @@ namespace TextRPG
                     Console.WriteLine();
                 }
             }
+
+            // 장비 장착 메서드. 장비가 구매한 장비인지 체크하고, 맞다면 장비 장착. 각 분류(무기, 방어구, 장신구)마다 하나의 장비만 장착가능
 
             public void EquipWeapon(AttackItem newItem)
             {
                 if(newItem.BuyCheck)
                 {
-                    if (WeaponItem != null)
+                    if (WeaponItem != null) // 현재 장비 장착 중일 시
                     {
-                        Attack -= WeaponItem.Attack;
-                        WeaponItem.Equip = false;
+                        Attack -= WeaponItem.Attack; // 장착중인 장비의 스탯만큼 감소
+                        WeaponItem.Equip = false; // 장착중인 장비 해제
                     }
 
-                    WeaponItem = newItem;
-                    Attack += WeaponItem.Attack;
-                    WeaponItem.Equip = true;
+                    WeaponItem = newItem; // 선택한 장비
+                    Attack += WeaponItem.Attack; // 장비의 스탯만큼 증가
+                    WeaponItem.Equip = true; // 장비 장착
                     Console.Clear();
                     Console.WriteLine("무기를 장착했습니다.");
                     Console.WriteLine();
                 }
-                else
+                else // 현재 지니고 있지않은 장비일 떄
                 {
                     Console.Clear();
                     Console.WriteLine("없는 장비입니다.");
@@ -256,7 +267,7 @@ namespace TextRPG
                 
             }
 
-            public void EquipArmor(DefenseItem newItem)
+            public void EquipArmor(DefenseItem newItem) // 방어구 장착
             {
                 if(newItem.BuyCheck)
                 {
@@ -281,7 +292,7 @@ namespace TextRPG
                 }
             }
 
-            public void EquipAccessory(AccessoryItem newItem)
+            public void EquipAccessory(AccessoryItem newItem) // 액세서리 장착
             {
                 if(newItem.BuyCheck)
                 {
@@ -308,18 +319,20 @@ namespace TextRPG
                 }
             }
         }
+
+        // 장비 인터페이스
         
-        public interface IAttackItem
+        public interface IAttackItem // 공격력 장비 인터페이스
         {
-            string Name { get; set; }
-            int Price { get; set; }
-            int Attack { get; set; }
-            string Txt { get; set; }
-            bool BuyCheck {  get; set; }
-            bool Equip { get; set; }
+            string Name { get; set; } // 이름
+            int Price { get; set; } // 가격
+            int Attack { get; set; } // 스탯
+            string Txt { get; set; } // 장비 설명
+            bool BuyCheck {  get; set; } // 구매 확인
+            bool Equip { get; set; } // 장착 확인
         }
 
-        public interface IDefenseItem
+        public interface IDefenseItem // 방어구 장비 인터페이스
         {
             string Name { get; set; }
             int Price { get; set; }
@@ -329,7 +342,7 @@ namespace TextRPG
             bool Equip { get; set; }
         }
 
-        public interface IAccessory
+        public interface IAccessory // 액세서리 인터페이스
         {
             string Name { get; set; }
             int Price { get; set; }
@@ -340,14 +353,16 @@ namespace TextRPG
             bool Equip { get; set; }
         }
 
-        public class AttackItem : IAttackItem
+        // 장비 클래스. 무기, 방어구, 액세서리가 존재한다
+
+        public class AttackItem : IAttackItem // 무기. 공격력 스탯을 지닌다
         {
-            public string Name { get; set; }
-            public int Price { get; set; }
-            public int Attack { get; set; }
-            public string Txt { get; set; }
-            public bool BuyCheck { get; set; }
-            public bool Equip { get; set; }
+            public string Name { get; set; } // 이름
+            public int Price { get; set; } // 가격
+            public int Attack { get; set; } // 공격력
+            public string Txt { get; set; } // 장비 설명
+            public bool BuyCheck { get; set; } // 구매 확인
+            public bool Equip { get; set; } // 장착 확인
 
 
             public AttackItem(string name, int attack, string txt, int price, bool buyCheck, bool equipCheck)
@@ -361,7 +376,7 @@ namespace TextRPG
             }
         }
 
-        public class DefenseItem : IDefenseItem
+        public class DefenseItem : IDefenseItem // 방어구. 방어력 스탯을 지닌다
         {
             public string Name { get; set; }
             public int Price { get; set; }
@@ -381,7 +396,7 @@ namespace TextRPG
             }
         }
 
-        public class AccessoryItem : IAccessory
+        public class AccessoryItem : IAccessory // 액세서리는 공격력, 방어력 둘 다 가지고 있다
         {
             public string Name { get; set; }
             public int Price { get; set; }
@@ -404,15 +419,17 @@ namespace TextRPG
             }
         }
 
+        // ItemManager 클래스. 장비들의 리스트 관리 및 장비 인터페이스를 관리한다
+
         public class ItemManager
         {
             private static ItemManager instance;
 
-            public List<AttackItem> attackItem = new List<AttackItem>();
-            public List<DefenseItem> defenseItem = new List<DefenseItem>();
-            public List<AccessoryItem> accessoryItem = new List<AccessoryItem>();
+            public List<AttackItem> attackItem = new List<AttackItem>(); // 무기 리스트
+            public List<DefenseItem> defenseItem = new List<DefenseItem>(); // 방어구 리스트
+            public List<AccessoryItem> accessoryItem = new List<AccessoryItem>(); // 액세서리 리스트
 
-            private ItemManager()
+            private ItemManager() // 장비 생성. 이름, 스탯, 설명, 가격, 구매 확인, 장착 확인 순으로 되어있다.
             {
                 attackItem.Add(new AttackItem("1 낡은 검", 2, "쉽게 볼 수 있는 낡은 검 입니다.", 600, false, false));
                 attackItem.Add(new AttackItem("2 청동 도끼", 5, "어디선가 사용됐던 거 같은 도끼입니다.", 1500, false, false));
@@ -426,6 +443,7 @@ namespace TextRPG
                 accessoryItem.Add(new AccessoryItem("8 오래된 반지", 5, 5, "왕의 반지입니다.", 2500, false, false));
             }
 
+            // 싱글톤 화로 다른 클래스에서 사용 시 장착 또는 구매 확인의 변경점이 그대로 적용된다
             public static ItemManager Instance // 싱글톤 화
             {
                 get
@@ -436,42 +454,43 @@ namespace TextRPG
                 }
             }
 
-            public void ShowItem()
+            public void ShowItem() // 상점에 아이템 표시
             {
-                foreach (var item in attackItem)
+                // foreach로 리스트의 모든 요소 출력
+                foreach (var item in attackItem) // 무기
                 {
                     Console.WriteLine("- {0} | 공격력 +{1} | {2} | {3}", item.Name, item.Attack, item.Txt, BuyOrNot(item.Price, item.BuyCheck));
                 }
-                foreach (var item in defenseItem)
+                foreach (var item in defenseItem) // 방어구
                 {
                     Console.WriteLine("- {0} | 방어력 +{1} | {2} | {3}", item.Name, item.Defense, item.Txt, BuyOrNot(item.Price, item.BuyCheck));
                 }
-                foreach (var item in accessoryItem)
+                foreach (var item in accessoryItem) // 액세서리
                 {
                     Console.WriteLine("- {0} | 공격력 +{1} | 방어력 +{2} | {3} | {4}", item.Name, item.Attack ,item.Defense, item.Txt, BuyOrNot(item.Price, item.BuyCheck));
                 }
             }
 
-            public void BuyItem() // 구입한 아이템을 인벤토리에 표시해주는 역할
+            public void BuyItem() // 구입한 아이템 표시
             {
-                foreach (var item in attackItem) // 리스트를 전부 출력, 그러나 안에 조건문을 두어 특정 리스트만 출력되게 한다
+                foreach (var item in attackItem) // 무기 리스트를 전부 출력, 그러나 안에 조건문을 두어 특정 리스트만 출력되게 한다
                 {
                     if(item.BuyCheck == true) // 구매가 확인돠었을 경우
                         Console.WriteLine("- {0} | 공격력 +{1} | {2}", IsEquip(item.Name, item.Equip), item.Attack, item.Txt);
                 }
-                foreach (var item in defenseItem)
+                foreach (var item in defenseItem) // 방어구
                 {
                     if (item.BuyCheck == true)
                         Console.WriteLine("- {0} | 방어력 +{1} | {2}", IsEquip(item.Name, item.Equip), item.Defense, item.Txt);
                 }
-                foreach (var item in accessoryItem)
+                foreach (var item in accessoryItem) // 액세서리
                 {
                     if (item.BuyCheck == true)
                         Console.WriteLine("- {0} | 공격력 +{1} | 방어력 +{2} | {3} | {4}", item.Name, item.Attack, item.Defense, item.Txt, BuyOrNot(item.Price, item.BuyCheck));
                 }
             }
 
-            private string BuyOrNot(int price, bool buy)
+            private string BuyOrNot(int price, bool buy) // 구매된 아이템일 경우 구매완료 표기. 아닐 시 가격 표기
             {
                 return buy == true ? "구매완료" : $"{price} G";
             }
@@ -484,37 +503,38 @@ namespace TextRPG
 
         }
 
+        // Inventory 클래스. 인벤토리 선택지를 선택했을 때의 결과 관리
         public class Inventory
         {
-            Player player = Player.Instance;
-            ItemManager itemManager = ItemManager.Instance;
+            Player player = Player.Instance; // 플레이어 인스턴스
+            ItemManager itemManager = ItemManager.Instance; // 아이템 인스턴스
 
-            bool caseCheck;
+            bool caseCheck; // 선택지 bool 변수. 장착 관리로 들어 갔을 시 true로 변경.
 
             public void InventoryMenu()
             {
-                caseCheck = false;
+                caseCheck = false; // 기본설정
                 Console.WriteLine();
                 Console.WriteLine("인벤토리");
                 Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.");
                 Console.WriteLine();
                 Console.WriteLine("[아이템 목록]");
-                itemManager.BuyItem();
+                itemManager.BuyItem(); // 보유중인 아이템 목록 출력
                 Console.WriteLine();
-                if(caseCheck == false)
+                if(caseCheck == false) // 장착관리를 아직 들어가지 않은 상태일 때
                     Console.WriteLine("1. 장착 관리");
                 Console.WriteLine("0. 나가기");
                 Console.WriteLine();
                 Console.WriteLine("원하시는 행동을 입력해주세요.");
                 Console.Write(">> ");
                 string input = Console.ReadLine();
-                switch (input)
+                switch (input) // 장착 관리 또는 나가기 선택지
                 {
-                    case "1":
+                    case "1": // 장착 관리 선택
                         caseCheck = true;
                         Console.Write("장착할 아이템의 번호를 입력하세요 >> ");
                         input = Console.ReadLine();
-                        switch (input)
+                        switch (input) // 장착할 아이템 선택지
                         {
                             case "1":
                                 player.EquipWeapon(itemManager.attackItem[0]);
@@ -540,21 +560,21 @@ namespace TextRPG
                             case "8":
                                 player.EquipAccessory(itemManager.accessoryItem[1]);
                                 break;
-                            case "0":
+                            case "0": // 나가기
                                 caseCheck = false;
                                 Console.Clear();
                                 return;
-                            default:
+                            default: // 선택지에 없는 문자 입력
                                 Console.Clear();
                                 Console.WriteLine("잘못 입력하셨습니다. 뒤로 돌아갑니다.");
                                 break;
                         }
                         break;
-                    case "0":
+                    case "0": // 나가기
                         caseCheck = false;
                         Console.Clear();
                         return;
-                    default:
+                    default: // 선택지에 없는 문자 입력
                         Console.Clear();
                         Console.WriteLine("잘못 입력하셨습니다. 메인으로 돌아갑니다.");
                         break;
@@ -564,41 +584,42 @@ namespace TextRPG
 
         }
 
+        // Store 클래스. 상점 선택지를 선택했을 때의 결과 관리
         public class Store
         {
             Player player = Player.Instance;
             ItemManager itemManager = ItemManager.Instance;
 
-            bool caseCheck;
-            bool sell;
+            bool caseCheck; // 아이템 구매 또는 아이템 판매를 선택했을 때 true로 변경
+            bool sell; // 판매창으로 들어갔을 때 보유하고 있는 아이템만 출력 (미구현)
             public void StoreMenu()
             {
-                caseCheck = false;
-                sell = false;
+                sell = false; // 기본설정
+                caseCheck = false; // 기본설정
                 Console.WriteLine();
                 Console.WriteLine("상점");
                 Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.");
                 Console.WriteLine();
-                Console.WriteLine("[보유 골드]\n" + player.Gold);
+                Console.WriteLine("[보유 골드]\n" + player.Gold); // 현재 소지금 표시
                 Console.WriteLine();
                 Console.WriteLine("[아이템 목록]");
-                if(sell == true)
+                if(sell == true) // 판매창으로 들어갔을 때
                 {
-                    itemManager.BuyItem();
+                    itemManager.BuyItem(); // 보유한 장비만 출력
                 }
-                else
+                else // 기본 상점 선택지 또는 구매창일 때
                 {
-                    itemManager.ShowItem();
+                    itemManager.ShowItem(); // 모든 장비 출력
                 }
 
                 Console.WriteLine();
-                if (caseCheck == false)
+                if (caseCheck == false) // 구매 or 판매창일때 선택지 가리기
                 {
                     Console.WriteLine("1. 아이템 구매");
                     Console.WriteLine("2. 아이템 판매");
                 }
                 else
-                    Console.WriteLine("구매할 아이템 번호를 눌러주세요");
+                    Console.WriteLine("구매(판매)할 아이템 번호를 눌러주세요");
                 Console.WriteLine("0. 나가기");
                 Console.WriteLine();
                 Console.WriteLine("원하시는 행동을 입력해주세요.");
@@ -609,7 +630,7 @@ namespace TextRPG
                 {
                     switch (input)
                     {
-                        case "1":
+                        case "1": // 구매
                             caseCheck = true;
                             Console.Write("구매할 아이템의 번호를 입력하세요 >> ");
                             input = Console.ReadLine();
@@ -639,19 +660,19 @@ namespace TextRPG
                                 case "8":
                                     player.BuyAccessory(itemManager.accessoryItem[1]);
                                     break;
-                                case "0":
+                                case "0": // 나가기
                                     caseCheck = false;
                                     Console.Clear();
                                     return;
-                                default:
+                                default: // 선택지에 없는 문자 입력시
                                     Console.Clear();
                                     Console.WriteLine("잘못 입력하셨습니다. 뒤로 돌아갑니다.");
                                     break;
                             }
                             break;
-                        case "2":
+                        case "2": // 판매
+                            sell = true; // 판매가 가능한 물품만 출력
                             caseCheck = true;
-                            sell = true;
                             Console.Write("판매할 아이템의 번호를 입력하세요 >> ");
                             input = Console.ReadLine();
                             switch (input)
@@ -674,21 +695,27 @@ namespace TextRPG
                                 case "6":
                                     player.SellArmor(itemManager.defenseItem[2]);
                                     break;
-                                case "0":
+                                case "7":
+                                    player.SellAccessory(itemManager.accessoryItem[0]);
+                                    break;
+                                case "8":
+                                    player.SellAccessory(itemManager.accessoryItem[1]);
+                                    break;
+                                case "0": // 나가기
                                     caseCheck = false;
                                     Console.Clear();
                                     return;
-                                default:
+                                default: // 선택지에 없는 문자 입력시
                                     Console.Clear();
                                     Console.WriteLine("잘못 입력하셨습니다. 뒤로 돌아갑니다.");
                                     break;
                             }
                             break;
-                        case "0":
+                        case "0": // 나가기
                             caseCheck = false;
                             Console.Clear();
                             return;
-                        default:
+                        default: // 선택지에 없는 문자 입력시
                             Console.Clear();
                             Console.WriteLine("잘못 입력하셨습니다. 메인으로 돌아갑니다.");
                             break;
@@ -696,20 +723,18 @@ namespace TextRPG
                 }
            
             }
-
-            
-
         }
 
+        // Sleep 클래스. 휴식 메뉴 관리
         public class Sleep
         {
-            Player player = Player.Instance;
+            Player player = Player.Instance; // 플레이어 인스턴스
 
-            public void Healing()
+            public void Healing() // 가격을 지불하고 휴식을 해 체력을 채운다.
             {
                 Console.WriteLine();
                 Console.WriteLine("휴식하기");
-                Console.WriteLine($"500 G 를 내면 체력을 회복할 수 있습니다. (보유 골드 : {player.Gold}");
+                Console.WriteLine($"500 G 를 내면 체력을 회복할 수 있습니다. \n(현재 체력 : {player.Health}\n(보유 골드 : {player.Gold}");
                 Console.WriteLine("1. 휴식하기");
                 Console.WriteLine("0. 나가기");
                 Console.WriteLine();
@@ -719,26 +744,28 @@ namespace TextRPG
                 switch (input)
                 {
                     case "1":
-                        if(player.Gold >= 500)
+                        if(player.Gold >= 500) // 소지금 500 G 이상 보유하고 있을때
                         {
-                            player.Gold -= 500;
-                            player.Health = 100;
+                            player.Gold -= 500; // 소지금 차감
+                            player.Health += 80; // 체력 회복
+                            if(player.Health > (player.Health + (player.Level + (player.DungeonClear / 2)) * 10 - 10)) // 만약 최대 체력보다 많이 회복했을 시
+                                player.Health = (player.Health + (player.Level + (player.DungeonClear / 2)) * 10 - 10); // 체력을 최대체력으로 변경
                             Console.Clear();
                             Console.WriteLine("500 G 를 지불하고 휴식을 취했습니다.");
                             Console.WriteLine();
                             break;
                         }
-                        else
+                        else // 금액 부족 시
                         {
                             Console.Clear();
                             Console.WriteLine("보유한 금액이 부족합니다.");
                             Console.WriteLine();
                             break;
                         }
-                    case "0":
+                    case "0": // 나가기
                         Console.Clear();
                         return;
-                    default:
+                    default: // 선택지에 없는 문자 입력시
                         Console.Clear();
                         Console.WriteLine("잘못 입력하셨습니다. 메인 화면으로 돌아갑니다");
                         break;
@@ -746,30 +773,31 @@ namespace TextRPG
             }
         }
 
+        // Dungeon 클래스. 던전 메뉴 기능 관리 (일부 기능만 동작. 던전 미구현)
         public class Dungeon
         {
-            Player player = Player.Instance;
-
-            public void DungeonClear()
+            Player player = Player.Instance; // 플레이어 인스턴스
+            public void DungeonClear() // 던전 클리어
             {
-                player.DungeonClear++;
-                player.Health -= 30;
-                if(player.Health < 0)
+                player.DungeonClear++; // 플레이어의 던전 클리어 횟수 증가 > 경험치 증가
+                player.Gold += 1000; // 소지금 추가
+                player.Health -= 30;// 플레이어 체력 차감
+                if(player.Health < 0) // 플레이어 체력이 0 보다 떨어졌을 경우
                 {
-                    player.Health = 0;
+                    player.Health = 0; // 체력 0으로 변경
                     Console.Clear();
-                    Console.WriteLine("던전 클리어 실패");
+                    Console.WriteLine("던전 클리어 실패"); // 클리어 실패 문구 출력
                 }
                 else
                 {
                     Console.Clear();
-                    Console.WriteLine($"던전 클리어! (클리어 횟수 : {player.DungeonClear})\n현재 체력 : {player.Health}");
+                    Console.WriteLine($"던전 클리어! (클리어 횟수 : {player.DungeonClear})\n현재 체력 : {player.Health}"); // 던전 클리어 문구 및 현재 체력 표시
                     Console.WriteLine();
                 }
             }
         }
 
-        public class InGame
+        public class InGame // 인게임 메뉴 관리 클래스
         {
             Player player = Player.Instance;
             Store store = new Store();
@@ -780,12 +808,12 @@ namespace TextRPG
             {
                 while (true)
                 {
-                    if(player.Health == 0)
+                    if(player.Health == 0) // 플레이어의 체력이 0이 되었을 때
                     {
-                        Console.WriteLine("사망했습니다.");
-                        break;
+                        Console.WriteLine("사망했습니다."); // 사망 문구 출력
+                        break; // 게임 종료
                     }
-                        
+                    // 메뉴
                     Console.WriteLine("1. 상태보기");
                     Console.WriteLine("2. 인벤토리");
                     Console.WriteLine("3. 상점");
@@ -799,21 +827,21 @@ namespace TextRPG
                     switch (input)
                     {
                         case "1":
-                            player.PlayerStat();
+                            player.PlayerStat(); // 상태보기
                             break;
                         case "2":
-                            inventory.InventoryMenu();
+                            inventory.InventoryMenu(); // 인벤토리
                             break;
                         case "3":
-                            store.StoreMenu();
+                            store.StoreMenu(); // 상점
                             break;
                         case "4":
-                            sleep.Healing();
+                            sleep.Healing(); // 휴식
                             break;
                         case "5":
-                            dungeon.DungeonClear();
+                            dungeon.DungeonClear(); // 던전
                             break;
-                        default:
+                        default: // 선택지에 없는 문자일시
                             Console.Clear();
                             Console.WriteLine("잘못 입력하셨습니다. 다시 입력하세요.");
                             break;
@@ -826,7 +854,7 @@ namespace TextRPG
         {
             InGame game = new InGame();
             Console.WriteLine("스파르타 마을에 오신 여러분 환영합니다.\n이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.");
-            game.InGameMenu();
+            game.InGameMenu(); // 게임 메뉴 출력
         }
     }
 }
