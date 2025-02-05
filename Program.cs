@@ -36,7 +36,9 @@ namespace TextRPG
             public int Attack { get; set; } = 10;
             public int Defense { get; set; } = 5;
             public int Health { get; set; } = 100;
-            public int Gold { get; set; } = 1500;
+            public int Gold { get; set; } = 3000;
+            public AttackItem WeaponItem { get; set; }
+            public DefenseItem ArmorItem{ get; set; }
 
             public Player()
             {
@@ -80,6 +82,32 @@ namespace TextRPG
             {
                 int defDfs = 5;
                 return num > defDfs ? $"(+{num - defDfs})" : "";
+            }
+
+            public void EquipWeapon(AttackItem newItem)
+            {
+                if (WeaponItem != null)
+                {
+                    Attack -= WeaponItem.Attack;
+                    WeaponItem.Equip = false;
+                }
+
+                WeaponItem = newItem;
+                Attack += WeaponItem.Attack;
+                WeaponItem.Equip = true;
+            }
+
+            public void EquipArmor(DefenseItem newItem)
+            {
+                if (ArmorItem != null)
+                {
+                    Defense -= ArmorItem.Defense;
+                    ArmorItem.Equip = false;
+                }
+
+                ArmorItem = newItem;
+                Defense += ArmorItem.Defense;
+                ArmorItem.Equip = true;
             }
         }
         
@@ -243,83 +271,23 @@ namespace TextRPG
                         switch (input)
                         {
                             case "1":
-                                if (itemManager.attackItem[0].Equip == false)
-                                {
-                                    itemManager.attackItem[0].Equip = true;
-                                    player.Attack += itemManager.attackItem[0].Attack;
-                                    break;
-                                }
-                                else
-                                {
-                                    itemManager.attackItem[0].Equip = false;
-                                    player.Attack = player.Attack;
-                                    break;
-                                }
+                                player.EquipWeapon(itemManager.attackItem[0]);
+                                break;
                             case "2":
-                                if (itemManager.attackItem[1].Equip == false)
-                                {
-                                    itemManager.attackItem[1].Equip = true;
-                                    player.Attack += itemManager.attackItem[1].Attack;
-                                    break;
-                                }
-                                else
-                                {
-                                    itemManager.attackItem[1].Equip = false;
-                                    player.Attack = player.Attack;
-                                    break;
-                                }
+                                player.EquipWeapon(itemManager.attackItem[1]);
+                                break;
                             case "3":
-                                if (itemManager.attackItem[2].Equip == false)
-                                {
-                                    itemManager.attackItem[2].Equip = true;
-                                    player.Attack += itemManager.attackItem[2].Attack;
-                                    break;
-                                }
-                                else
-                                {
-                                    itemManager.attackItem[2].Equip = false;
-                                    player.Attack = player.Attack;
-                                    break;
-                                }
+                                player.EquipWeapon(itemManager.attackItem[2]);
+                                break;
                             case "4":
-                                if (itemManager.defenseItem[0].Equip == false)
-                                {
-                                    itemManager.defenseItem[0].Equip = true;
-                                    player.Defense += itemManager.defenseItem[0].Defense;
-                                    break;
-                                }
-                                else
-                                {
-                                    itemManager.defenseItem[0].Equip = false;
-                                    player.Defense = player.Defense;
-                                    break;
-                                }
+                                player.EquipArmor(itemManager.defenseItem[0]);
+                                break;
                             case "5":
-                                if (itemManager.defenseItem[1].Equip == false)
-                                {
-                                    itemManager.defenseItem[1].Equip = true;
-                                    player.Defense += itemManager.defenseItem[1].Defense;
-                                    break;
-                                }
-                                else
-                                {
-                                    itemManager.defenseItem[1].Equip = false;
-                                    player.Defense = player.Defense;
-                                    break;
-                                }
+                                player.EquipArmor(itemManager.defenseItem[1]);
+                                break;
                             case "6":
-                                if (itemManager.defenseItem[2].Equip == false)
-                                {
-                                    itemManager.defenseItem[2].Equip = true;
-                                    player.Defense += itemManager.defenseItem[0].Defense;
-                                    break;
-                                }
-                                else
-                                {
-                                    itemManager.defenseItem[2].Equip = false;
-                                    player.Defense = player.Defense;
-                                    break;
-                                }
+                                player.EquipArmor(itemManager.defenseItem[2]);
+                                break;
                             case "0":
                                 caseCheck = false;
                                 Console.Clear();
