@@ -37,6 +37,7 @@ namespace TextRPG
             public int Defense { get; set; } = 5;
             public int Health { get; set; } = 100;
             public int Gold { get; set; } = 3000;
+            public int DungeonClear { get; set; }
             public AttackItem WeaponItem { get; set; }
             public DefenseItem ArmorItem{ get; set; }
             public AccessoryItem AccessoryItem { get; set; }
@@ -53,11 +54,11 @@ namespace TextRPG
                 Console.WriteLine();
                 Console.WriteLine("상태 보기");
                 Console.WriteLine("캐릭터의 정보가 표시됩니다.");
-                Console.WriteLine("LV. " + Level);
+                Console.WriteLine("LV. " + (Level + (DungeonClear / 2)));
                 Console.WriteLine(Name + " " + "({0})", Job);
-                Console.WriteLine("공격력 : " + Attack + $"{PlusATK(Attack)}");
-                Console.WriteLine("방어력 : " + Defense + $"{PlusDFS(Defense)}");
-                Console.WriteLine("체 력 : " + Health);
+                Console.WriteLine("공격력 : " + (Attack + ((Level + (DungeonClear / 2)) * 0.5f - 0.5f)) + $"{PlusATK(Attack)}");
+                Console.WriteLine("방어력 : " + (Defense + ((Level + (DungeonClear / 2)) * 1 - 1)) + $"{PlusDFS(Defense)}");
+                Console.WriteLine("체 력 : " + (Health + (Level + (DungeonClear / 2)) * 10 - 10));
                 Console.WriteLine("Gold : " + Gold);
                 Console.WriteLine();
                 Console.WriteLine("0. 나가기");
@@ -709,12 +710,26 @@ namespace TextRPG
             }
         }
 
+        public class Dungeon
+        {
+            Player player = Player.Instance;
+
+            public void DungeonClear()
+            {
+                player.DungeonClear++;
+                Console.Clear();
+                Console.WriteLine($"던전 클리어! (클리어 횟수 : {player.DungeonClear})");
+                Console.WriteLine();
+            }
+        }
+
         public class InGame
         {
             Player player = Player.Instance;
             Store store = new Store();
             Inventory inventory = new Inventory();
             Sleep sleep = new Sleep();
+            Dungeon dungeon = new Dungeon();
             public void InGameMenu()
             {
                 while (true)
@@ -723,6 +738,7 @@ namespace TextRPG
                     Console.WriteLine("2. 인벤토리");
                     Console.WriteLine("3. 상점");
                     Console.WriteLine("4. 휴식하기");
+                    Console.WriteLine("5. 던전");
                     Console.WriteLine();
                     Console.WriteLine("원하시는 행동을 입력해주세요.");
                     Console.Write(">> ");
@@ -741,6 +757,9 @@ namespace TextRPG
                             break;
                         case "4":
                             sleep.Healing();
+                            break;
+                        case "5":
+                            dungeon.DungeonClear();
                             break;
                         default:
                             Console.Clear();
