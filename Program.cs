@@ -45,13 +45,15 @@ namespace TextRPG
 
             public void PlayerStat()
             {
+
+
                 Console.WriteLine();
                 Console.WriteLine("상태 보기");
                 Console.WriteLine("캐릭터의 정보가 표시됩니다.");
                 Console.WriteLine("LV. " + Level);
                 Console.WriteLine(Name + " " + "({0})", Job);
-                Console.WriteLine("공격력 : " + Attack + $"{Plus(Attack)}");
-                Console.WriteLine("방어력 : " + Defense + $"{Plus(Defense)}");
+                Console.WriteLine("공격력 : " + Attack + $"{PlusATK(Attack)}");
+                Console.WriteLine("방어력 : " + Defense + $"{PlusDFS(Defense)}");
                 Console.WriteLine("체 력 : " + Health);
                 Console.WriteLine("Gold : " + Gold);
                 Console.WriteLine();
@@ -68,9 +70,16 @@ namespace TextRPG
                 }
             }
 
-            private string Plus(int num)
+            private string PlusATK(int num)
             {
-                return num > 10 ? $"(+{num - 10})" : "";
+                int defAtk = 10;
+                return num > defAtk ? $"(+{num - defAtk})" : "";
+            }
+
+            private string PlusDFS(int num)
+            {
+                int defDfs = 5;
+                return num > defDfs ? $"(+{num - defDfs})" : "";
             }
         }
         
@@ -153,7 +162,7 @@ namespace TextRPG
                 defenseItem.Add(new DefenseItem("6 스파르타의 갑옷", 15, "스파르타의 전사들이 사용했다는 전설의 갑옷입니다.", 3500, false, false));
             }
 
-            public static ItemManager Instance
+            public static ItemManager Instance // 싱글톤 화
             {
                 get
                 {
@@ -175,11 +184,11 @@ namespace TextRPG
                 }
             }
 
-            public void BuyItem()
+            public void BuyItem() // 구입한 아이템을 인벤토리에 표시해주는 역할
             {
-                foreach (var item in attackItem)
+                foreach (var item in attackItem) // 리스트를 전부 출력, 그러나 안에 조건문을 두어 특정 리스트만 출력되게 한다
                 {
-                    if(item.BuyCheck == true)
+                    if(item.BuyCheck == true) // 구매가 확인돠었을 경우
                         Console.WriteLine("- {0} | 공격력 +{1} | {2}", IsEquip(item.Name, item.Equip), item.Attack, item.Txt);
                 }
                 foreach (var item in defenseItem)
@@ -194,9 +203,9 @@ namespace TextRPG
                 return buy == true ? "구매완료" : $"{price} G";
             }
 
-            private string IsEquip(string name, bool eq)
+            private string IsEquip(string name, bool eq) // 아이템을 장착했는지 판단 후 장착 했을시 장착 표시
             {
-                return eq == true ? $"[E]{name}" : name;
+                return eq == true ? $"[E]{name}" : name; // 장착 시 아이템 이름 왼쪽에 [E] 표시가 생긴다
             }
 
         }
@@ -341,9 +350,11 @@ namespace TextRPG
             ItemManager itemManager = ItemManager.Instance;
 
             bool caseCheck;
+            bool sell;
             public void StoreMenu()
             {
                 caseCheck = false;
+                sell = false;
                 Console.WriteLine();
                 Console.WriteLine("상점");
                 Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.");
@@ -351,10 +362,21 @@ namespace TextRPG
                 Console.WriteLine("[보유 골드]\n" + player.Gold);
                 Console.WriteLine();
                 Console.WriteLine("[아이템 목록]");
-                itemManager.ShowItem();
+                if(sell == true)
+                {
+                    itemManager.BuyItem();
+                }
+                else
+                {
+                    itemManager.ShowItem();
+                }
+
                 Console.WriteLine();
                 if (caseCheck == false)
+                {
                     Console.WriteLine("1. 아이템 구매");
+                    Console.WriteLine("2. 아이템 판매");
+                }
                 else
                     Console.WriteLine("구매할 아이템 번호를 눌러주세요");
                 Console.WriteLine("0. 나가기");
@@ -516,6 +538,126 @@ namespace TextRPG
                                     break;
                             }
                             break;
+                        case "2":
+                            float sellPrice = 0.85f;
+                            caseCheck = true;
+                            sell = true;
+                            Console.Write("판매할 아이템의 번호를 입력하세요 >> ");
+                            input = Console.ReadLine();
+                            switch (input)
+                            {
+                                case "1":
+                                    if (itemManager.attackItem[0].BuyCheck == true)
+                                    {
+                                        itemManager.attackItem[0].BuyCheck = false;
+                                        itemManager.attackItem[0].Equip = false;
+                                        player.Gold += (int)(itemManager.attackItem[0].Price * sellPrice);
+                                        Console.Clear();
+                                        Console.WriteLine("판매를 완료했습니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("이미 판매하거나 구매하지 않은 아이템입니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                case "2":
+                                    if (itemManager.attackItem[1].BuyCheck == true)
+                                    {
+                                        itemManager.attackItem[1].BuyCheck = false;
+                                        itemManager.attackItem[1].Equip = false;
+                                        player.Gold += (int)(itemManager.attackItem[1].Price * sellPrice);
+                                        Console.Clear();
+                                        Console.WriteLine("판매를 완료했습니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("이미 판매하거나 구매하지 않은 아이템입니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                case "3":
+                                    if (itemManager.attackItem[2].BuyCheck == true)
+                                    {
+                                        itemManager.attackItem[2].BuyCheck = false;
+                                        itemManager.attackItem[2].Equip = false;
+                                        player.Gold += (int)(itemManager.attackItem[2].Price * sellPrice);
+                                        Console.Clear();
+                                        Console.WriteLine("판매를 완료했습니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("이미 판매하거나 구매하지 않은 아이템입니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                case "4":
+                                    if (itemManager.defenseItem[0].BuyCheck == true)
+                                    {
+                                        itemManager.defenseItem[0].BuyCheck = false;
+                                        itemManager.defenseItem[0].Equip = false;
+                                        player.Gold += (int)(itemManager.defenseItem[0].Price * sellPrice);
+                                        Console.Clear();
+                                        Console.WriteLine("판매를 완료했습니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("이미 판매하거나 구매하지 않은 아이템입니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                case "5":
+                                    if (itemManager.defenseItem[1].BuyCheck == true)
+                                    {
+                                        itemManager.defenseItem[1].BuyCheck = false;
+                                        itemManager.defenseItem[1].Equip = false;
+                                        player.Gold += (int)(itemManager.defenseItem[1].Price * sellPrice);
+                                        Console.Clear();
+                                        Console.WriteLine("판매를 완료했습니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("이미 판매하거나 구매하지 않은 아이템입니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                case "6":
+                                    if (itemManager.defenseItem[2].BuyCheck == true)
+                                    {
+                                        itemManager.defenseItem[2].BuyCheck = false;
+                                        itemManager.defenseItem[2].Equip = false;
+                                        player.Gold += (int)(itemManager.defenseItem[2].Price * sellPrice);
+                                        Console.Clear();
+                                        Console.WriteLine("판매를 완료했습니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("이미 판매하거나 구매하지 않은 아이템입니다.");
+                                        Console.WriteLine();
+                                        break;
+                                    }
+                                case "0":
+                                    caseCheck = false;
+                                    Console.Clear();
+                                    return;
+                                default:
+                                    Console.Clear();
+                                    Console.WriteLine("잘못 입력하셨습니다. 뒤로 돌아갑니다.");
+                                    break;
+                            }
+                            break;
                         case "0":
                             caseCheck = false;
                             Console.Clear();
@@ -623,7 +765,6 @@ namespace TextRPG
         static void Main(string[] args)
         {
             InGame game = new InGame();
-            Player player = new Player();
             Console.WriteLine("스파르타 마을에 오신 여러분 환영합니다.\n이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.");
             game.InGameMenu();
         }
